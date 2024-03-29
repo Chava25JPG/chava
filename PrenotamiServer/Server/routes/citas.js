@@ -64,7 +64,7 @@ async function verificarDisponibilidadCitas() {
 
             const { Usuario } = usuariosConsulados[indiceUsuarioActual];
             
-            await esperarAleatoriamente(3000, 7000);
+            await esperarAleatoriamente(30000, 70000);
             await driver.get(urlPrenotami);
 
             await interactuarOrganicamente(driver);
@@ -72,7 +72,7 @@ async function verificarDisponibilidadCitas() {
             console.log(Contrasenia);
             await interactuarConElemento(driver, By.id('login-password'), Contrasenia, true);
 
-            await esperarAleatoriamente(2000, 5000);
+            await esperarAleatoriamente(20000, 50000);
             await navegarYVerificarElemento(driver, By.id('advanced'), true);
 
             // Aquí iría la lógica actual que tienes para manejar los botones y verificar las citas
@@ -87,7 +87,7 @@ async function verificarDisponibilidadCitas() {
             for (let botonInfo of botones) {
                 await manejarBoton(driver, botonInfo);
                 // Espera aleatoria entre cada acción para simular comportamiento humano
-                await esperarAleatoriamente(4000, 8000);
+                await esperarAleatoriamente(40000, 80000);
             }
 
             // Reiniciar el ciclo con una espera aleatoria
@@ -134,8 +134,8 @@ async function interactuarOrganicamente(driver) {
     await driver.executeScript("window.scrollBy(0,-250)"); // Scroll hacia arriba
 }
 async function interactuarConElemento(driver, locator, texto, esSubmit = false) {
-    let elemento = await driver.wait(until.elementLocated(locator), 10000);
-    await driver.wait(until.elementIsVisible(elemento), 10000);
+    let elemento = await driver.wait(until.elementLocated(locator), 100000);
+    await driver.wait(until.elementIsVisible(elemento), 100000);
     
 
     for (const char of texto) {
@@ -144,25 +144,25 @@ async function interactuarConElemento(driver, locator, texto, esSubmit = false) 
     }
 
     if (esSubmit) {
-        await esperarAleatoriamente(1000, 2000); // Pequeña pausa antes de enviar
+        await esperarAleatoriamente(10000, 20000); // Pequeña pausa antes de enviar
         await elemento.sendKeys(Key.RETURN);
     }
-    await esperarAleatoriamente(2000, 4000);
+    await esperarAleatoriamente(20000, 40000);
 }
 
 async function navegarYVerificarElemento(driver, locator, click = false) {
-    let elemento = await driver.wait(until.elementLocated(locator), 20000);
-    await driver.wait(until.elementIsVisible(elemento), 20000);
+    let elemento = await driver.wait(until.elementLocated(locator), 200000);
+    await driver.wait(until.elementIsVisible(elemento), 200000);
     if (click) {
         await elemento.click();
     }
-    await esperarAleatoriamente(2000, 5000);
+    await esperarAleatoriamente(20000, 50000);
 }
 
 async function manejarBoton(driver, botonInfo) {
     if (botonInfo.paginate) {
         await navegarYVerificarElemento(driver, By.xpath("//a[contains(@class, 'paginate_button') and @data-dt-idx='2']"), true);
-        await esperarAleatoriamente(2000, 4000);
+        await esperarAleatoriamente(200000, 400000);
     }
     let botonPrenota = await driver.wait(until.elementLocated(By.xpath(botonInfo.xpath)), 200000);
     
@@ -174,9 +174,9 @@ async function manejarBoton(driver, botonInfo) {
     } else {
         console.log('No se encontró disponibilidad o redirección desconocida.');
     }
-    await esperarAleatoriamente(3000, 6000); // Espera antes de continuar
+    await esperarAleatoriamente(30000, 60000); // Espera antes de continuar
     await driver.get(urlServices); // Vuelve a la página principal antes de continuar con el siguiente botón
-    await esperarAleatoriamente(3000, 6000); // Espera antes de continuar
+    await esperarAleatoriamente(30000, 60000); // Espera antes de continuar
 }
 
 // Función para esperar un tiempo aleatorio entre dos valores
