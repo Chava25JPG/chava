@@ -63,6 +63,7 @@ async function verificarDisponibilidadCitas() {
 
             await interactuarOrganicamente(driver);
             await interactuarConElemento(driver, By.id('login-email'), Usuario);
+            console.log(contrasenia);
             await interactuarConElemento(driver, By.id('login-password'), Contrasenia, true);
 
             await esperarAleatoriamente(2000, 5000);
