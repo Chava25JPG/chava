@@ -44,8 +44,9 @@ async function verificarDisponibilidadCitas() {
 
         while (true) {
 
+            
             let options = new chrome.Options();
-            options.addArguments('user-data-dir=/home/chava25/.config/google-chrome/Default');
+            //options.addArguments('user-data-dir=/home/chava25/.config/google-chrome/Default');
             // options.addArguments('headless'); // Ejecutar sin GUI
             options.addArguments('no-sandbox'); // Ejecuta r Chrome sin sandbox (necesario en ciertos entornos sin GUI)
             // options.addArguments('disable-dev-shm-usage'); // Evitar problemas de memoria en contenedores Docker
@@ -55,6 +56,7 @@ async function verificarDisponibilidadCitas() {
             
             const driver = new Builder()
             .forBrowser('chrome')
+            .setChromeOptions(options)
             //.setChromeOptions(new chrome.Options().setChromeBinaryPath('/usr/bin/google-chrome'))
             .build();
 
