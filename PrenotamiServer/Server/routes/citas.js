@@ -4,7 +4,7 @@ const mysql = require('mysql');
 
 
 const usuario = 'saseza8@gmail.com';
-const Contrasenia = 'Zaragoza@2525';
+const Contrasenia = 'Zaragoza0';
 const urlPrenotami = 'https://prenotami.esteri.it/';
 const urlServices = 'https://prenotami.esteri.it/Services';
 
