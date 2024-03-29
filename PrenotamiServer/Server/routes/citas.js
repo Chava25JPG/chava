@@ -135,7 +135,13 @@ async function interactuarOrganicamente(driver) {
 async function interactuarConElemento(driver, locator, texto, esSubmit = false) {
     let elemento = await driver.wait(until.elementLocated(locator), 10000);
     await driver.wait(until.elementIsVisible(elemento), 10000);
-    await elemento.sendKeys(texto);
+    
+
+    for (const char of texto) {
+        await elemento.sendKeys(char);
+        await driver.sleep(100); // Espera 100 milisegundos entre cada carácter
+    }
+
     if (esSubmit) {
         await esperarAleatoriamente(1000, 2000); // Pequeña pausa antes de enviar
         await elemento.sendKeys(Key.RETURN);
