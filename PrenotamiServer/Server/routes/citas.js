@@ -4,7 +4,7 @@ const mysql = require('mysql');
 
 
 const usuario = 'saseza8@gmail.com';
-const contrasenia = 'Zaragoza@2525';
+const Contrasenia = 'Zaragoza@2525';
 const urlPrenotami = 'https://prenotami.esteri.it/';
 const urlServices = 'https://prenotami.esteri.it/Services';
 
@@ -56,14 +56,14 @@ async function verificarDisponibilidadCitas() {
 
 
 
-            const { Usuario, Contrasenia } = usuariosConsulados[indiceUsuarioActual];
+            const { Usuario } = usuariosConsulados[indiceUsuarioActual];
             
             await esperarAleatoriamente(3000, 7000);
             await driver.get(urlPrenotami);
 
             await interactuarOrganicamente(driver);
             await interactuarConElemento(driver, By.id('login-email'), Usuario);
-            console.log(contrasenia);
+            console.log(Contrasenia);
             await interactuarConElemento(driver, By.id('login-password'), Contrasenia, true);
 
             await esperarAleatoriamente(2000, 5000);
