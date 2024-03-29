@@ -101,7 +101,7 @@ async function verificarDisponibilidadCitas() {
             if (indiceUsuarioActual === 0) {
                 // Si hemos vuelto al inicio, esperar 30 minutos antes de empezar de nuevo
                 console.log("Esperando 30 minutos antes de reiniciar el ciclo...");
-                await new Promise(resolve => setTimeout(resolve, 60000)); // 30 minutos
+                await new Promise(resolve => setTimeout(resolve, 300000)); // 30 minutos
             } else {
                 // Esperar 5 minutos antes del próximo usuario
                 console.log("Esperando 5 minutos antes del próximo usuario...");
