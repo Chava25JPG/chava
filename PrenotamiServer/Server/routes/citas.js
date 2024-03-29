@@ -52,8 +52,11 @@ async function verificarDisponibilidadCitas() {
             // options.addArguments('disable-gpu'); // Desactivar GPU, útil en modo headless
             // options.addArguments('window-size=1920,1080');
 
-            let driver = await new Builder().forBrowser('chrome').setChromeOptions(options).build();
-
+            
+            const driver = new Builder()
+            .forBrowser('chrome')
+            .setChromeOptions(new chrome.Options().setChromeBinaryPath('/usr/bin/google-chrome'))
+            .build();
 
 
             const { Usuario } = usuariosConsulados[indiceUsuarioActual];
