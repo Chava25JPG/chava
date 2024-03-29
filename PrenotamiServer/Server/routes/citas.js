@@ -164,6 +164,7 @@ async function manejarBoton(driver, botonInfo) {
         await esperarAleatoriamente(2000, 4000);
     }
     let botonPrenota = await driver.wait(until.elementLocated(By.xpath(botonInfo.xpath)), 20000);
+    await driver.wait(until.elementToBeClickable(botonPrenota), 10000);
     await botonPrenota.click();
     let currentUrl = await driver.getCurrentUrl();
     if (currentUrl.includes(botonInfo.urlPart)) {
