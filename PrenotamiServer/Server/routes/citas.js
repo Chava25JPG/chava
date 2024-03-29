@@ -52,6 +52,7 @@ async function verificarDisponibilidadCitas() {
             // options.addArguments('disable-dev-shm-usage'); // Evitar problemas de memoria en contenedores Docker
             // options.addArguments('disable-gpu'); // Desactivar GPU, útil en modo headless
             // options.addArguments('window-size=1920,1080');
+            options.addArguments('--start-fullscreen'); 
 
             
             const driver = new Builder()
@@ -164,7 +165,7 @@ async function manejarBoton(driver, botonInfo) {
         await esperarAleatoriamente(2000, 4000);
     }
     let botonPrenota = await driver.wait(until.elementLocated(By.xpath(botonInfo.xpath)), 200000);
-    await driver.executeScript("arguments[0].scrollIntoView(true);", botonPrenota);
+    
     await botonPrenota.click();
     let currentUrl = await driver.getCurrentUrl();
     if (currentUrl.includes(botonInfo.urlPart)) {
