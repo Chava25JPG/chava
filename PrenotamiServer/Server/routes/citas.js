@@ -163,8 +163,8 @@ async function manejarBoton(driver, botonInfo) {
         await navegarYVerificarElemento(driver, By.xpath("//a[contains(@class, 'paginate_button') and @data-dt-idx='2']"), true);
         await esperarAleatoriamente(2000, 4000);
     }
-    let botonPrenota = await driver.wait(until.elementLocated(By.xpath(botonInfo.xpath)), 20000);
-    await driver.wait(until.elementToBeClickable(botonPrenota), 10000);
+    let botonPrenota = await driver.wait(until.elementLocated(By.xpath(botonInfo.xpath)), 200000);
+    
     await botonPrenota.click();
     let currentUrl = await driver.getCurrentUrl();
     if (currentUrl.includes(botonInfo.urlPart)) {
