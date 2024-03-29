@@ -46,10 +46,11 @@ async function verificarDisponibilidadCitas() {
 
             let options = new chrome.Options();
             options.addArguments('user-data-dir=/home/chava25/.config/google-chrome/Default');
-            options.addArguments('headless'); // Ejecutar sin GUI
-            options.addArguments('no-sandbox'); // Ejecutar Chrome sin sandbox (necesario en ciertos entornos sin GUI)
-            options.addArguments('disable-dev-shm-usage'); // Evitar problemas de memoria en contenedores Docker
-            options.addArguments('disable-gpu'); // Desactivar GPU, útil en modo headless
+            // options.addArguments('headless'); // Ejecutar sin GUI
+            // options.addArguments('no-sandbox'); // Ejecutar Chrome sin sandbox (necesario en ciertos entornos sin GUI)
+            // options.addArguments('disable-dev-shm-usage'); // Evitar problemas de memoria en contenedores Docker
+            // options.addArguments('disable-gpu'); // Desactivar GPU, útil en modo headless
+            // options.addArguments('window-size=1920,1080');
 
             let driver = await new Builder().forBrowser('chrome').setChromeOptions(options).build();
 
@@ -107,32 +108,6 @@ async function verificarDisponibilidadCitas() {
         // await driver.quit();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
