@@ -47,7 +47,7 @@ async function verificarDisponibilidadCitas() {
             let options = new chrome.Options();
             options.addArguments('user-data-dir=/home/chava25/.config/google-chrome/Default');
             // options.addArguments('headless'); // Ejecutar sin GUI
-            // options.addArguments('no-sandbox'); // Ejecutar Chrome sin sandbox (necesario en ciertos entornos sin GUI)
+            // options.addArguments('no-sandbox'); // Ejecuta r Chrome sin sandbox (necesario en ciertos entornos sin GUI)
             // options.addArguments('disable-dev-shm-usage'); // Evitar problemas de memoria en contenedores Docker
             // options.addArguments('disable-gpu'); // Desactivar GPU, útil en modo headless
             // options.addArguments('window-size=1920,1080');
@@ -66,7 +66,7 @@ async function verificarDisponibilidadCitas() {
             await interactuarConElemento(driver, By.id('login-password'), Contrasenia, true);
 
             await esperarAleatoriamente(2000, 5000);
-            await navegarYVerificarElemento(driver, By.id('advanced'), true);
+            await navegarYVerificarElemento(driver, By.id('Prenota'), true);
 
             // Aquí iría la lógica actual que tienes para manejar los botones y verificar las citas
 
@@ -110,6 +110,16 @@ async function verificarDisponibilidadCitas() {
 }
 
 
+async function interactuarConElemento(driver, locator, texto, esSubmit = false) {
+    let elemento = await driver.wait(until.elementLocated(locator), 10000);
+    await driver.wait(until.elementIsEnabled(elemento), 10000);
+
+    await elemento.sendKeys(texto);
+    if (esSubmit) {
+        await elemento.submit();
+    }
+}
+
 
 
 
@@ -125,16 +135,16 @@ async function interactuarOrganicamente(driver) {
     await driver.sleep(2000); // Espera
     await driver.executeScript("window.scrollBy(0,-250)"); // Scroll hacia arriba
 }
-async function interactuarConElemento(driver, locator, texto, esSubmit = false) {
-    let elemento = await driver.wait(until.elementLocated(locator), 10000);
-    await driver.wait(until.elementIsVisible(elemento), 10000);
-    await elemento.sendKeys(texto);
-    if (esSubmit) {
-        await esperarAleatoriamente(1000, 2000); // Pequeña pausa antes de enviar
-        await elemento.sendKeys(Key.RETURN);
-    }
-    await esperarAleatoriamente(2000, 4000);
-}
+// async function interactuarConElemento(driver, locator, texto, esSubmit = false) {
+//     let elemento = await driver.wait(until.elementLocated(locator), 10000);
+//     await driver.wait(until.elementIsVisible(elemento), 10000);
+//     await elemento.sendKeys(texto);
+//     if (esSubmit) {
+//         await esperarAleatoriamente(1000, 2000); // Pequeña pausa antes de enviar
+//         await elemento.sendKeys(Key.RETURN);
+//     }
+//     await esperarAleatoriamente(2000, 4000);
+// }
 
 async function navegarYVerificarElemento(driver, locator, click = false) {
     let elemento = await driver.wait(until.elementLocated(locator), 20000);
