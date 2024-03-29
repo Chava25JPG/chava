@@ -17,6 +17,7 @@
     "morgan": "~1.9.1",
     "mysql": "^2.18.1",
     "node-telegram-bot-api": "^0.65.1",
-    "selenium": "^2.20.0"
+    "selenium": "^2.20.0",
+    "selenium-webdriver": "^4.19.0"
   }
 }
