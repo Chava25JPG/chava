@@ -64,7 +64,7 @@ async function verificarDisponibilidadCitas() {
 
             const { Usuario } = usuariosConsulados[indiceUsuarioActual];
             
-            await esperarAleatoriamente(30000, 70000);
+            await esperarAleatoriamente(10000, 70000);
             await driver.get(urlPrenotami);
 
             await interactuarOrganicamente(driver);
@@ -72,8 +72,9 @@ async function verificarDisponibilidadCitas() {
             console.log(Contrasenia);
             await interactuarConElemento(driver, By.id('login-password'), Contrasenia, true);
 
-            await esperarAleatoriamente(20000, 50000);
+            await esperarAleatoriamente(1000, 50000);
             await navegarYVerificarElemento(driver, By.id('advanced'), true);
+            await esperarAleatoriamente(1000, 5000);
 
             // Aquí iría la lógica actual que tienes para manejar los botones y verificar las citas
 
@@ -87,11 +88,15 @@ async function verificarDisponibilidadCitas() {
             for (let botonInfo of botones) {
                 await manejarBoton(driver, botonInfo);
                 // Espera aleatoria entre cada acción para simular comportamiento humano
-                await esperarAleatoriamente(40000, 80000);
+                await esperarAleatoriamente(1000, 80000);
             }
 
             // Reiniciar el ciclo con una espera aleatoria
-            await esperarAleatoriamente(10000, 15000);
+            await esperarAleatoriamente(1000, 15000);
+
+            const logoutButton = await driver.findElement(By.xpath("//form[@id='logoutForm']/button"));
+            await logoutButton.click();
+            console.log("Sesión cerrada.");
 
             await driver.quit();
             console.log("Cerrando");
@@ -101,7 +106,7 @@ async function verificarDisponibilidadCitas() {
             if (indiceUsuarioActual === 0) {
                 // Si hemos vuelto al inicio, esperar 30 minutos antes de empezar de nuevo
                 console.log("Esperando 30 minutos antes de reiniciar el ciclo...");
-                await new Promise(resolve => setTimeout(resolve, 300000)); // 30 minutos
+                await new Promise(resolve => setTimeout(resolve, 1200000)); // 30 minutos
             } else {
                 // Esperar 5 minutos antes del próximo usuario
                 console.log("Esperando 5 minutos antes del próximo usuario...");
@@ -137,46 +142,63 @@ async function interactuarConElemento(driver, locator, texto, esSubmit = false) 
     let elemento = await driver.wait(until.elementLocated(locator), 100000);
     await driver.wait(until.elementIsVisible(elemento), 100000);
     
+    // Simulación de movimientos del mouse antes de interactuar con el elemento
+    let acciones = driver.actions({async: true});
+    await acciones.move({origin: elemento}).perform();
 
+    // Simula errores tipográficos y correcciones
     for (const char of texto) {
         await elemento.sendKeys(char);
-        await driver.sleep(100); // Espera 100 milisegundos entre cada carácter
+        let shouldMakeTypo = Math.random() < 0.1; // 10% de probabilidad de error tipográfico
+        if (shouldMakeTypo) {
+            await elemento.sendKeys(Key.BACK_SPACE); // Borrar y reescribir
+            await elemento.sendKeys(char);
+        }
+        await driver.sleep(100 + Math.random() * 150); // Espera entre cada carácter
     }
 
     if (esSubmit) {
-        await esperarAleatoriamente(10000, 20000); // Pequeña pausa antes de enviar
+        await esperarAleatoriamente(1000, 2000); // Pequeña pausa antes de enviar
         await elemento.sendKeys(Key.RETURN);
     }
-    await esperarAleatoriamente(20000, 40000);
+    await esperarAleatoriamente(2000, 8000);
 }
 
 async function navegarYVerificarElemento(driver, locator, click = false) {
-    let elemento = await driver.wait(until.elementLocated(locator), 200000);
-    await driver.wait(until.elementIsVisible(elemento), 200000);
+    let elemento = await driver.wait(until.elementLocated(locator), 20000);
+    await driver.wait(until.elementIsVisible(elemento), 20000);
     if (click) {
         await elemento.click();
     }
-    await esperarAleatoriamente(20000, 50000);
+    await esperarAleatoriamente(1000, 10000);
 }
 
 async function manejarBoton(driver, botonInfo) {
-    if (botonInfo.paginate) {
-        await navegarYVerificarElemento(driver, By.xpath("//a[contains(@class, 'paginate_button') and @data-dt-idx='2']"), true);
-        await esperarAleatoriamente(200000, 400000);
+    try {
+        if (botonInfo.paginate) {
+            await navegarYVerificarElemento(driver, By.xpath("//a[contains(@class, 'paginate_button') and @data-dt-idx='2']"), true);
+            await esperarAleatoriamente(1000, 8000);
+        }
+
+        let botonPrenota = await driver.wait(until.elementLocated(By.xpath(botonInfo.xpath)), 20000);
+        await botonPrenota.click();
+        let currentUrl = await driver.getCurrentUrl();
+
+        if (currentUrl.includes(botonInfo.urlPart)) {
+            console.log(`Citas disponibles para ${botonInfo.message}, redireccionado a: ${currentUrl}`);
+            enviarNotificacion(consuladoIdEncontrado, botonInfo.TPCid);
+        } else {
+            console.log('No se encontró disponibilidad o redirección desconocida.');
+        }
+    } catch (error) {
+        console.error('Elemento no encontrado, cerrando el navegador y reiniciando el ciclo.', error);
+    } finally {
+        await driver.quit();
+        console.log("Navegador cerrado.");
     }
-    let botonPrenota = await driver.wait(until.elementLocated(By.xpath(botonInfo.xpath)), 200000);
-    
-    await botonPrenota.click();
-    let currentUrl = await driver.getCurrentUrl();
-    if (currentUrl.includes(botonInfo.urlPart)) {
-        console.log(`Citas disponibles para ${botonInfo.message}, redireccionado a: ${currentUrl}`);
-        enviarNotificacion(consuladoIdEncontrado, botonInfo.TPCid);
-    } else {
-        console.log('No se encontró disponibilidad o redirección desconocida.');
-    }
-    await esperarAleatoriamente(30000, 60000); // Espera antes de continuar
+    await esperarAleatoriamente(10000, 60000); // Espera antes de continuar
     await driver.get(urlServices); // Vuelve a la página principal antes de continuar con el siguiente botón
-    await esperarAleatoriamente(30000, 60000); // Espera antes de continuar
+    await esperarAleatoriamente(10000, 60000); // Espera antes de continuar
 }
 
 // Función para esperar un tiempo aleatorio entre dos valores
