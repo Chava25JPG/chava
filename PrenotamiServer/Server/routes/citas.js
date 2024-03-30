@@ -94,30 +94,50 @@ async function verificarDisponibilidadCitas() {
             // Reiniciar el ciclo con una espera aleatoria
             await esperarAleatoriamente(1000, 15000);
 
-            const logoutButton = await driver.findElement(By.xpath("//form[@id='logoutForm']/button"));
-            await logoutButton.click();
-            console.log("Sesión cerrada.");
-
+            
             await driver.quit();
             console.log("Cerrando");
             
             indiceUsuarioActual = (indiceUsuarioActual + 1) % usuariosConsulados.length; // Avanzar al siguiente usuario o volver al inicio
 
             if (indiceUsuarioActual === 0) {
+                // const logoutButton = await driver.findElement(By.xpath("//form[@id='logoutForm']/button"));
+                // await logoutButton.click();
+                //console.log("Sesión cerrada.");
+
                 // Si hemos vuelto al inicio, esperar 30 minutos antes de empezar de nuevo
                 console.log("Esperando 30 minutos antes de reiniciar el ciclo...");
                 await new Promise(resolve => setTimeout(resolve, 1200000)); // 30 minutos
             } else {
                 // Esperar 5 minutos antes del próximo usuario
+                // const logoutButton = await driver.findElement(By.xpath("//form[@id='logoutForm']/button"));
+                // await logoutButton.click();
+                // console.log("Sesión cerrada.");
+
                 console.log("Esperando 5 minutos antes del próximo usuario...");
                 await new Promise(resolve => setTimeout(resolve, 300000)); // 5 minutos
             }
         }
     } catch (error) {
-        console.error('Ocurrió un error:', error);
+        console.error('Elemento no encontrado, cerrando el navegador y reiniciando el ciclo.', error);
     } finally {
-        // Considera cerrar el navegador automáticamente o mantenerlo abierto según tus necesidades
-        // await driver.quit();
+        let options = new chrome.Options();
+            //options.addArguments('user-data-dir=/home/chava25/.config/google-chrome/Default');
+            // options.addArguments('headless'); // Ejecutar sin GUI
+            options.addArguments('no-sandbox'); // Ejecuta r Chrome sin sandbox (necesario en ciertos entornos sin GUI)
+            // options.addArguments('disable-dev-shm-usage'); // Evitar problemas de memoria en contenedores Docker
+            // options.addArguments('disable-gpu'); // Desactivar GPU, útil en modo headless
+            // options.addArguments('window-size=1920,1080');
+            options.addArguments('--start-fullscreen'); 
+
+            
+            const driver = new Builder()
+            .forBrowser('chrome')
+            .setChromeOptions(options)
+            //.setChromeOptions(new chrome.Options().setChromeBinaryPath('/usr/bin/google-chrome'))
+            .build();
+        await driver.quit();
+        console.log("Navegador cerrado.");
     }
 }
 
@@ -193,8 +213,7 @@ async function manejarBoton(driver, botonInfo) {
     } catch (error) {
         console.error('Elemento no encontrado, cerrando el navegador y reiniciando el ciclo.', error);
     } finally {
-        await driver.quit();
-        console.log("Navegador cerrado.");
+        
     }
     await esperarAleatoriamente(10000, 60000); // Espera antes de continuar
     await driver.get(urlServices); // Vuelve a la página principal antes de continuar con el siguiente botón
