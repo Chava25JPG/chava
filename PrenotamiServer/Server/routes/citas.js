@@ -114,7 +114,8 @@ async function verificarDisponibilidadCitas() {
 
                 // Si hemos vuelto al inicio, esperar 30 minutos antes de empezar de nuevo
                 console.log("Esperando 30 minutos antes de reiniciar el ciclo...");
-                await new Promise(resolve => setTimeout(resolve, 1200000)); // 30 minutos
+                await esperarAleatoriamente(100000, 1200000);
+                // 30 minutos
             } else {
                 // Esperar 5 minutos antes del próximo usuario
                 // const logoutButton = await driver.findElement(By.xpath("//form[@id='logoutForm']/button"));
