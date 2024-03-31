@@ -170,35 +170,70 @@ async function interactuarConElemento(driver, locator, texto, esSubmit = false) 
     let elemento = await driver.wait(until.elementLocated(locator), 100000);
     await driver.wait(until.elementIsVisible(elemento), 100000);
     
-    // Simulación de movimientos del mouse antes de interactuar con el elemento
+    // Simulación de movimientos del mouse más naturales y aleatorios antes de interactuar con el elemento
     let acciones = driver.actions({async: true});
-    await acciones.move({origin: elemento}).perform();
+    // Mover el cursor fuera del elemento y luego dentro de él para simular un enfoque más humano
+    await acciones.move({x: 0, y: 0}).move({origin: elemento}).perform();
 
-    // Simula errores tipográficos y correcciones
+    // Introduce una mayor variabilidad en los errores tipográficos y las correcciones
     for (const char of texto) {
         await elemento.sendKeys(char);
-        let shouldMakeTypo = Math.random() < 0.1; // 10% de probabilidad de error tipográfico
+        let shouldMakeTypo = Math.random() < 0.05; // Reduce la probabilidad de error tipográfico al 5%
         if (shouldMakeTypo) {
-            await elemento.sendKeys(Key.BACK_SPACE); // Borrar y reescribir
+            await elemento.sendKeys(Key.BACK_SPACE); // Simula una corrección
+            let typoDelay = 300 + Math.random() * 200; // Espera un poco más antes de corregir
+            await driver.sleep(typoDelay);
             await elemento.sendKeys(char);
         }
-        await driver.sleep(50 + Math.random() * 150); // Espera entre cada carácter
+        let typingDelay = 100 + Math.random() * 200; // Varía más el tiempo entre cada carácter
+        await driver.sleep(typingDelay);
+    }
+
+    // Implementa una función para pausas aleatorias más sofisticada
+    async function esperarAleatoriamente(min, max) {
+        let espera = min + Math.random() * (max - min);
+        await driver.sleep(espera);
     }
 
     if (esSubmit) {
-        await esperarAleatoriamente(1000, 2000); // Pequeña pausa antes de enviar
+        await esperarAleatoriamente(2000, 5000); // Varía la pausa antes de enviar
         await elemento.sendKeys(Key.RETURN);
     }
-    await esperarAleatoriamente(2000, 8000);
+    await esperarAleatoriamente(3000, 7000); // Espera después de enviar
 }
 
+
 async function navegarYVerificarElemento(driver, locator, click = false) {
-    let elemento = await driver.wait(until.elementLocated(locator), 20000);
-    await driver.wait(until.elementIsVisible(elemento), 20000);
-    if (click) {
-        await elemento.click();
+    try {
+        // Encuentra el elemento con espera implícita
+        let elemento = await driver.wait(until.elementLocated(locator), 20000);
+        // Espera a que el elemento sea visible
+        await driver.wait(until.elementIsVisible(elemento), 20000);
+
+        // Mover el cursor hacia el elemento de forma impredecible
+        let acciones = driver.actions({ bridge: true });
+        await acciones.move({ origin: elemento }).perform();
+
+        // Espera un poco antes de hacer clic, para simular la indecisión humana
+        await esperarAleatoriamente(500, 1500);
+
+        if (click) {
+            // Realiza movimientos leves del ratón antes de hacer clic
+            await acciones.move({
+                origin: elemento,
+                x: Math.round((Math.random() - 0.5) * 10),
+                y: Math.round((Math.random() - 0.5) * 10)
+            }).perform();
+            await esperarAleatoriamente(100, 500); // Espera breve antes de hacer clic
+            await elemento.click();
+        }
+
+        // Agrega una espera después del clic para simular el tiempo de reacción humano
+        if (click) await esperarAleatoriamente(2000, 5000);
+    } catch (error) {
+        console.error('Error al navegar y verificar el elemento:', error);
+        throw error; // Propagar el error para manejo adicional si es necesario
     }
-    await esperarAleatoriamente(1000, 10000);
 }
 
 async function manejarBoton(driver, botonInfo) {
