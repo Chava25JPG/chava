@@ -69,7 +69,7 @@ async function verificarDisponibilidadCitas() {
 
             const { Usuario } = usuariosConsulados[indiceUsuarioActual];
             
-            await esperarAleatoriamente(10000, 70000);
+            await esperarAleatoriamente(1000, 70000);
             await driver.get(urlPrenotami);
 
             await interactuarOrganicamente(driver);
@@ -79,9 +79,9 @@ async function verificarDisponibilidadCitas() {
             await esperarAleatoriamente(1000, 50000);
             await interactuarConElemento(driver, By.id('login-password'), Contrasenia, true);
 
-            await esperarAleatoriamente(1000, 50000);
+            await esperarAleatoriamente(1000, 500000);
             await navegarYVerificarElemento(driver, By.id('advanced'), true);
-            await esperarAleatoriamente(1000, 5000);
+            await esperarAleatoriamente(1000, 50000);
 
             // Aquí iría la lógica actual que tienes para manejar los botones y verificar las citas
 
@@ -182,7 +182,7 @@ async function interactuarConElemento(driver, locator, texto, esSubmit = false) 
             await elemento.sendKeys(Key.BACK_SPACE); // Borrar y reescribir
             await elemento.sendKeys(char);
         }
-        await driver.sleep(100 + Math.random() * 150); // Espera entre cada carácter
+        await driver.sleep(50 + Math.random() * 150); // Espera entre cada carácter
     }
 
     if (esSubmit) {
