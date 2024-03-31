@@ -11,23 +11,28 @@ const urlServices = 'https://prenotami.esteri.it/Services';
 const enviarNotificacion = require ('./envNotificacion.js');
 const consuladoIdEncontrado = 1;
 
-const dbConfig = {
+const pool = mysql.createPool({
+    connectionLimit: 10,
     host: 'localhost',
     user: 'root',
     password: 'Zaragoza2525',
     database: 'PrenotamiBot'
-};
-
-const db = mysql.createConnection(dbConfig);
-db.connect(err => {
-    if (err) throw err;
-    console.log("Conectado a la base de datos");
+  });
+  
+function query(sql, parameters) {
+return new Promise((resolve, reject) => {
+    pool.query(sql, parameters, (error, results) => {
+    if (error) {
+        return reject(error);
+    }
+    resolve(results);
+    });
 });
-
+}
 
 async function obtenerUsuariosConsulados() {
     return new Promise((resolve, reject) => {
-        db.query('SELECT Usuario, Contrasenia FROM UsuariosConsulados', (err, results) => {
+        query('SELECT Usuario, Contrasenia FROM UsuariosConsulados', (err, results) => {
             if (err) return reject(err);
             resolve(results);
         });

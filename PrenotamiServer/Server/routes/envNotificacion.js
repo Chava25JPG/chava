@@ -3,35 +3,33 @@ const TelegramBot = require('node-telegram-bot-api');
 
 // Configuración del bot de Telegram
 const token = '6868127032:AAGEOTurKOofiT0vr6nhgbeBxJ7yGeoHON0';
-const bot = new TelegramBot(token);
+const bot = new TelegramBot(token, { polling: true });
 
-// Configuración de la conexión a la base de datos
-const dbConfig = {
+// Configuración del pool de conexiones a la base de datos
+const pool = mysql.createPool({
+    connectionLimit: 10,
     host: 'localhost',
     user: 'root',
     password: 'Zaragoza2525',
     database: 'PrenotamiBot'
-};
+});
 
-function query(db, sql, params) {
+function query(sql, params) {
     return new Promise((resolve, reject) => {
-        db.query(sql, params, (error, results) => {
+        pool.query(sql, params, (error, results) => {
             if (error) reject(error);
             else resolve(results);
         });
     });
 }
 
-async function eliminarRegistrosUsuario(db, chatId) {
+async function eliminarRegistrosUsuario(chatId) {
     try {
-        // Obtener UsuarioID para este ChatId
-        const resultsUsuario = await query(db, "SELECT UsuarioID FROM Usuarios WHERE ChatId = ?", [chatId]);
+        const resultsUsuario = await query("SELECT UsuarioID FROM Usuarios WHERE ChatId = ?", [chatId]);
         if (resultsUsuario.length > 0) {
             const usuarioID = resultsUsuario[0].UsuarioID;
-            // Eliminar registros en PreferenciasUsuario
-            await query(db, "DELETE FROM PreferenciasUsuario WHERE UsuarioID = ?", [usuarioID]);
-            // Eliminar registro en Usuarios
-            await query(db, "DELETE FROM Usuarios WHERE UsuarioID = ?", [usuarioID]);
+            await query("DELETE FROM PreferenciasUsuario WHERE UsuarioID = ?", [usuarioID]);
+            await query("DELETE FROM Usuarios WHERE UsuarioID = ?", [usuarioID]);
         }
     } catch (error) {
         console.error("Error al eliminar registros de usuario:", error);
@@ -39,14 +37,6 @@ async function eliminarRegistrosUsuario(db, chatId) {
 }
 
 async function enviarNotificacion(consuladoId, tipoCitaId) {
-    const db = mysql.createConnection(dbConfig);
-    db.connect(err => {
-        if (err) {
-            console.error('Error al conectar a la base de datos:', err);
-            return;
-        }
-    });
-
     const sql = `
         SELECT u.ChatId
         FROM Usuarios u
@@ -55,18 +45,25 @@ async function enviarNotificacion(consuladoId, tipoCitaId) {
     `;
 
     try {
-        const results = await query(db, sql, [consuladoId, tipoCitaId]);
+        const results = await query(sql, [consuladoId, tipoCitaId]);
         const mensaje = "¡Buenas noticias! Hay citas disponibles para tu selección. https://prenotami.esteri.it/";
 
         for (let row of results) {
             await bot.sendMessage(row.ChatId, mensaje);
-            await eliminarRegistrosUsuario(db, row.ChatId);
+            await eliminarRegistrosUsuario(row.ChatId);
         }
     } catch (error) {
         console.error('Error durante la notificación o eliminación de registros:', error);
-    } finally {
-        db.end();
     }
 }
 
 module.exports = enviarNotificacion;
+
+// No olvides cerrar el pool cuando tu aplicación se termine
+process.on('SIGINT', () => {
+    pool.end(err => {
+        if (err) console.log('Error cerrando el pool de conexiones', err);
+        console.log('Pool cerrado');
+        process.exit();
+    });
+});
