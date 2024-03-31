@@ -27,20 +27,38 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-const db = mysql.createConnection({
+const dbConfig = {
     host: "localhost",
     user: "root",
-    password: "Zaragoza2525",
+    password: "Zaragoza2525", // Deberías mover esto a variables de entorno
     database: "PrenotamiBot",
-});
+    };
 
-db.connect(err => {
-    if (err) {
-        console.error("Error al conectar a la base de datos:", err);
-        return;
+    var db;
+
+    function handleDisconnect() {
+    db = mysql.createConnection(dbConfig); // Crea una nueva conexión
+
+    db.connect(err => {
+        if (err) {
+        console.error('Error al conectar a la base de datos:', err);
+        setTimeout(handleDisconnect, 2000); // Espera 2 segundos antes de intentar reconectar
+        } else {
+        console.log("Conectado a la base de datos");
+        }
+    });
+
+    db.on('error', err => {
+        console.error('Error de base de datos:', err);
+        if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+        handleDisconnect(); // Vuelve a conectar si se pierde la conexión
+        } else {
+        throw err; // Lanza un error para errores no relacionados con la reconexión
+        }
+    });
     }
-    console.log("Conectado a la base de datos");
-});
+
+    handleDisconnect();
 
 
 
