@@ -53,7 +53,10 @@ const dbConfig = {
         if (err.code === 'PROTOCOL_CONNECTION_LOST') {
         handleDisconnect(); // Vuelve a conectar si se pierde la conexión
         } else {
-        throw err; // Lanza un error para errores no relacionados con la reconexión
+            
+            handleDisconnect();
+            throw err; // Lanza un error para errores no relacionados con la reconexión
+        
         }
     });
     }
