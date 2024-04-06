@@ -55,7 +55,7 @@ const dbConfig = {
         } else {
             
             handleDisconnect();
-            throw err; // Lanza un error para errores no relacionados con la reconexión
+            
         
         }
     });
