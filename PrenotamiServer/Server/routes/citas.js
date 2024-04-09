@@ -42,33 +42,24 @@ async function obtenerUsuariosConsulados() {
 
 
 async function verificarDisponibilidadCitas() {
-    
+    let driver;
+
     try {
         const usuariosConsulados = await obtenerUsuariosConsulados();
         let indiceUsuarioActual = 0;
 
-        while (true) {
-
-            
+        buclePrincipal: while (true) { // Etiqueta del bucle principal
             let options = new chrome.Options();
-            //options.addArguments('user-data-dir=/home/chava25/.config/google-chrome/Default');
-            // options.addArguments('headless'); // Ejecutar sin GUI
-            options.addArguments('no-sandbox'); // Ejecuta r Chrome sin sandbox (necesario en ciertos entornos sin GUI)
-            // options.addArguments('disable-dev-shm-usage'); // Evitar problemas de memoria en contenedores Docker
-            // options.addArguments('disable-gpu'); // Desactivar GPU, útil en modo headless
-            // options.addArguments('window-size=1920,1080');
-            options.addArguments('--start-fullscreen'); 
+            options.addArguments('no-sandbox'); // Ejecuta Chrome sin sandbox (necesario en ciertos entornos sin GUI)
+            options.addArguments('--start-fullscreen');
 
-            
-            const driver = new Builder()
-            .forBrowser('chrome')
-            .setChromeOptions(options)
-            //.setChromeOptions(new chrome.Options().setChromeBinaryPath('/usr/bin/google-chrome'))
-            .build();
-
+            driver = new Builder()
+                .forBrowser('chrome')
+                .setChromeOptions(options)
+                .build();
 
             const { Usuario } = usuariosConsulados[indiceUsuarioActual];
-            
+
             await esperarAleatoriamente(1000, 70000);
             await driver.get(urlPrenotami);
 
@@ -79,10 +70,16 @@ async function verificarDisponibilidadCitas() {
             await esperarAleatoriamente(1000, 50000);
             await interactuarConElemento(driver, By.id('login-password'), Contrasenia, true);
 
-            await esperarAleatoriamente(1000, 500000);
-            await navegarYVerificarElemento(driver, By.id('advanced'), true);
-            await esperarAleatoriamente(1000, 50000);
+            try {
+                await esperarAleatoriamente(1000, 500000);
+                await navegarYVerificarElemento(driver, By.id('advanced'), true);
+            } catch (error) {
+                console.error('Elemento "advanced" no encontrado, reiniciando ciclo.', error);
+                await driver.quit();
+                continue buclePrincipal; // Salta al inicio del bucle principal
+            }
 
+            await esperarAleatoriamente(1000, 50000);
             // Aquí iría la lógica actual que tienes para manejar los botones y verificar las citas
 
             
@@ -100,57 +97,26 @@ async function verificarDisponibilidadCitas() {
 
             // Reiniciar el ciclo con una espera aleatoria
             await esperarAleatoriamente(1000, 15000);
-
-            
             await driver.quit();
             console.log("Cerrando");
-            
-            indiceUsuarioActual = (indiceUsuarioActual + 1) % usuariosConsulados.length; // Avanzar al siguiente usuario o volver al inicio
+
+            indiceUsuarioActual = (indiceUsuarioActual + 1) % usuariosConsulados.length;
 
             if (indiceUsuarioActual === 0) {
-                // const logoutButton = await driver.findElement(By.xpath("//form[@id='logoutForm']/button"));
-                // await logoutButton.click();
-                //console.log("Sesión cerrada.");
-
-                // Si hemos vuelto al inicio, esperar 30 minutos antes de empezar de nuevo
                 console.log("Esperando 30 minutos antes de reiniciar el ciclo...");
-                await esperarAleatoriamente(100000, 1200000);
-                // 30 minutos
+                await esperarAleatoriamente(100000, 1200000); // 30 minutos
             } else {
-                // Esperar 5 minutos antes del próximo usuario
-                // const logoutButton = await driver.findElement(By.xpath("//form[@id='logoutForm']/button"));
-                // await logoutButton.click();
-                // console.log("Sesión cerrada.");
-
                 console.log("Esperando 5 minutos antes del próximo usuario...");
                 await new Promise(resolve => setTimeout(resolve, 300000)); // 5 minutos
             }
         }
     } catch (error) {
-        console.error('Elemento no encontrado, cerrando el navegador y reiniciando el ciclo.', error);
-    } finally {
-        let options = new chrome.Options();
-            //options.addArguments('user-data-dir=/home/chava25/.config/google-chrome/Default');
-            // options.addArguments('headless'); // Ejecutar sin GUI
-            options.addArguments('no-sandbox'); // Ejecuta r Chrome sin sandbox (necesario en ciertos entornos sin GUI)
-            // options.addArguments('disable-dev-shm-usage'); // Evitar problemas de memoria en contenedores Docker
-            // options.addArguments('disable-gpu'); // Desactivar GPU, útil en modo headless
-            // options.addArguments('window-size=1920,1080');
-            options.addArguments('--start-fullscreen'); 
-
-            
-            const driver = new Builder()
-            .forBrowser('chrome')
-            .setChromeOptions(options)
-            //.setChromeOptions(new chrome.Options().setChromeBinaryPath('/usr/bin/google-chrome'))
-            .build();
-        await driver.quit();
-        console.log("Navegador cerrado.");
+        console.error('Error inesperado, cerrando el navegador y reiniciando el ciclo.', error);
+        if (driver) {
+            await driver.quit();
+        }
     }
 }
-
-
-
 
 
 
