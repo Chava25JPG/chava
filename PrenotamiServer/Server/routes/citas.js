@@ -211,24 +211,24 @@ async function manejarBoton(driver, botonInfo) {
 
         let botonPrenota = await driver.wait(until.elementLocated(By.xpath(botonInfo.xpath)), 20000);
         await botonPrenota.click();
+        await driver.sleep(5000); // Esperar a que la página cargue completamente
 
-        // Espera hasta que la URL cambie o hasta que haya pasado un tiempo máximo
-        let currentUrl = await driver.wait(until.urlContains(botonInfo.urlPart), 10000);
-        if (currentUrl) {
-            // Comprueba si hay mensajes de error en la consola
-            let logs = await driver.manage().logs().get('browser');
-            let errorInLogs = logs.some(log => log.message.includes('neterror'));
-            if (!errorInLogs) {
+        // Verificar si hay un error de red
+        let bodyClass = await driver.findElement(By.css('body')).getAttribute('class');
+        if (!bodyClass.includes('neterror')) {
+            let currentUrl = await driver.getCurrentUrl();
+            if (currentUrl.includes(botonInfo.urlPart)) {
                 console.log(`Citas disponibles para ${botonInfo.message}, redireccionado a: ${currentUrl}`);
                 enviarNotificacion(consuladoIdEncontrado, botonInfo.TPCid);
             } else {
-                console.log('Se detectó un error de redirección o en la carga de la página.');
+                console.log('No se encontró disponibilidad o redirección desconocida.');
             }
         } else {
-            console.log('No se encontró disponibilidad o redirección desconocida.');
+            console.log('Se detectó un error de red.');
         }
     } catch (error) {
-        console.error('Error en el proceso de verificación de citas:', error);
+        console.error('Error al verificar la disponibilidad de citas:', error);
+        
     } finally {
         
     }
