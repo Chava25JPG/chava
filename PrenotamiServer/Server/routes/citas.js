@@ -60,14 +60,14 @@ async function verificarDisponibilidadCitas() {
 
             const { Usuario } = usuariosConsulados[indiceUsuarioActual];
 
-            await esperarAleatoriamente(1000, 70000);
+            await esperarAleatoriamente(500, 70000);
             await driver.get(urlPrenotami);
 
             await interactuarOrganicamente(driver);
-            await esperarAleatoriamente(1000, 50000);
+            await esperarAleatoriamente(500, 8000);
             await interactuarConElemento(driver, By.id('login-email'), Usuario);
             console.log(Contrasenia);
-            await esperarAleatoriamente(1000, 50000);
+            await esperarAleatoriamente(500, 8000);
             await interactuarConElemento(driver, By.id('login-password'), Contrasenia, true);
 
             try {
