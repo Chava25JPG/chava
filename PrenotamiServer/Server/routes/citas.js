@@ -51,7 +51,13 @@ async function verificarDisponibilidadCitas() {
         buclePrincipal: while (true) { // Etiqueta del bucle principal
             let options = new chrome.Options();
             options.addArguments('no-sandbox'); // Ejecuta Chrome sin sandbox (necesario en ciertos entornos sin GUI)
-            options.addArguments('--start-fullscreen');
+            options.addArguments(`user-data-dir=/path/root/.config/google-chrome/Default`);
+  
+  // Configuración adicional para evitar la detección
+            options.addArguments('--disable-blink-features=AutomationControlled');
+            options.excludeSwitches('enable-automation');
+            options.addArguments('--disable-infobars');
+            options.addArguments('--start-maximized');
 
             driver = new Builder()
                 .forBrowser('chrome')
@@ -163,10 +169,10 @@ async function interactuarConElemento(driver, locator, texto, esSubmit = false) 
     }
 
     if (esSubmit) {
-        await esperarAleatoriamente(500, 5000); // Varía la pausa antes de enviar
+        await esperarAleatoriamente(500, 10000); // Varía la pausa antes de enviar
         await elemento.sendKeys(Key.RETURN);
     }
-    await esperarAleatoriamente(500, 7000); // Espera después de enviar
+    await esperarAleatoriamente(500, 10000); // Espera después de enviar
 }
 
 
