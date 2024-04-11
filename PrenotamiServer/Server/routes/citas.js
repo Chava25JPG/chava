@@ -163,10 +163,10 @@ async function interactuarConElemento(driver, locator, texto, esSubmit = false) 
     }
 
     if (esSubmit) {
-        await esperarAleatoriamente(2000, 5000); // Varía la pausa antes de enviar
+        await esperarAleatoriamente(500, 5000); // Varía la pausa antes de enviar
         await elemento.sendKeys(Key.RETURN);
     }
-    await esperarAleatoriamente(3000, 7000); // Espera después de enviar
+    await esperarAleatoriamente(500, 7000); // Espera después de enviar
 }
 
 
