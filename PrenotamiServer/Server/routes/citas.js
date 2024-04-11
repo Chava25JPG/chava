@@ -102,7 +102,7 @@ async function verificarDisponibilidadCitas() {
             }
 
             // Reiniciar el ciclo con una espera aleatoria
-            await esperarAleatoriamente(1000, 15000);
+            await esperarAleatoriamente(1000, 150000);
             await driver.quit();
             console.log("Cerrando");
 
@@ -110,7 +110,7 @@ async function verificarDisponibilidadCitas() {
 
             if (indiceUsuarioActual === 0) {
                 console.log("Esperando 30 minutos antes de reiniciar el ciclo...");
-                await esperarAleatoriamente(100000, 1200000); // 30 minutos
+                await esperarAleatoriamente(600000, 1800000); // 30 minutos
             } else {
                 console.log("Esperando 5 minutos antes del próximo usuario...");
                 await new Promise(resolve => setTimeout(resolve, 300000)); // 5 minutos
