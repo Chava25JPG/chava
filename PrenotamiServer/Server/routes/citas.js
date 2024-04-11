@@ -147,7 +147,7 @@ async function interactuarConElemento(driver, locator, texto, esSubmit = false) 
         let shouldMakeTypo = Math.random() < 0.05; // Reduce la probabilidad de error tipográfico al 5%
         if (shouldMakeTypo) {
             await elemento.sendKeys(Key.BACK_SPACE); // Simula una corrección
-            let typoDelay = 300 + Math.random() * 200; // Espera un poco más antes de corregir
+            let typoDelay = 500 + Math.random() * 300; // Espera un poco más antes de corregir
             await driver.sleep(typoDelay);
             await elemento.sendKeys(char);
         }
