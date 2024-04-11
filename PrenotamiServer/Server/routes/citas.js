@@ -138,10 +138,8 @@ async function interactuarConElemento(driver, locator, texto, esSubmit = false) 
 
 
     let acciones = driver.actions({ async: true });
-    // Mover el cursor en un patrón aleatorio antes de enfocarse en el elemento
-    const start_x = Math.floor(Math.random() * 100) - 50;
-    const start_y = Math.floor(Math.random() * 100) - 50;
-    await acciones.move({ x: start_x, y: start_y }).move({ origin: elemento }).perform();
+    // Nos aseguramos de que el cursor se mueva dentro de los límites seguros del elemento
+    await acciones.move({ origin: elemento }).perform();
 
     // Introduce una mayor variabilidad en los errores tipográficos y las correcciones
     for (const char of texto) {
