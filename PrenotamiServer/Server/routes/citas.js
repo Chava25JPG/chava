@@ -151,7 +151,7 @@ async function interactuarConElemento(driver, locator, texto, esSubmit = false) 
             await driver.sleep(typoDelay);
             await elemento.sendKeys(char);
         }
-        let typingDelay = 100 + Math.random() * 200; // Varía más el tiempo entre cada carácter
+        let typingDelay = 50 + Math.random() * 250; // Varía más el tiempo entre cada carácter
         await driver.sleep(typingDelay);
     }
 
