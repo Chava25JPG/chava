@@ -133,26 +133,29 @@ async function interactuarOrganicamente(driver) {
     await driver.executeScript("window.scrollBy(0,-250)"); // Scroll hacia arriba
 }
 async function interactuarConElemento(driver, locator, texto, esSubmit = false) {
-    let elemento = await driver.wait(until.elementLocated(locator), 100000);
-    await driver.wait(until.elementIsVisible(elemento), 100000);
-    
-    // Simulación de movimientos del mouse más naturales y aleatorios antes de interactuar con el elemento
-    let acciones = driver.actions({async: true});
-    // Mover el cursor fuera del elemento y luego dentro de él para simular un enfoque más humano
-    await acciones.move({x: 0, y: 0}).move({origin: elemento}).perform();
+    let elemento = await driver.wait(until.elementLocated(locator), 20000);
+    await driver.wait(until.elementIsVisible(elemento), 20000);
+
+
+    let acciones = driver.actions({ async: true });
+    // Mover el cursor en un patrón aleatorio antes de enfocarse en el elemento
+    const start_x = Math.floor(Math.random() * 100) - 50;
+    const start_y = Math.floor(Math.random() * 100) - 50;
+    await acciones.move({ x: start_x, y: start_y }).move({ origin: elemento }).perform();
 
     // Introduce una mayor variabilidad en los errores tipográficos y las correcciones
     for (const char of texto) {
+        let typingDelay = 100 + Math.random() * 200; // Varía más el tiempo entre cada carácter
+        await driver.sleep(typingDelay);
         await elemento.sendKeys(char);
+
         let shouldMakeTypo = Math.random() < 0.05; // Reduce la probabilidad de error tipográfico al 5%
         if (shouldMakeTypo) {
+            await driver.sleep(500); // Espera antes de corregir para simular dudar
             await elemento.sendKeys(Key.BACK_SPACE); // Simula una corrección
-            let typoDelay = 500 + Math.random() * 300; // Espera un poco más antes de corregir
-            await driver.sleep(typoDelay);
+            await driver.sleep(300); // Espera un poco más antes de reescribir
             await elemento.sendKeys(char);
         }
-        let typingDelay = 50 + Math.random() * 250; // Varía más el tiempo entre cada carácter
-        await driver.sleep(typingDelay);
     }
 
     // Implementa una función para pausas aleatorias más sofisticada
