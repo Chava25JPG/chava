@@ -59,12 +59,10 @@ const dbConfig = {
         
         }
     });
-    }
-
+    };
     handleDisconnect();
 
-
-
+handleDisconnect();
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
